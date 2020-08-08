@@ -1,18 +1,18 @@
 #!/bin/bash
 
 username=l2x
-ROOT=`pwd`
+ROOT=/home/$username/vps
 ID_RSA1="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDnpRSpGB8w2kYL/6MTRoc8PbOZru6keaasLbPeP2vc6Ssa9GciFWTmzWv9PwY55ojc6cnmuxSv9trJeWNJXiXKdgoW5OE6i7DKzhAg2W5SaR8wDyjKl625tOOy1y6IFy3YBPtSaflSp7unf03XOYWXfgYLWInXBX5Y2yaS3S5C+DECDY+L7UQBxHoKhN/GRf+JhbDLYOmWdhRHq2IosSimUDg6Y0AYPf2GKFPVjY8RdrmM8rKMU7YJKyYeCrYMnSVNTkJXIbgCAZF4EFEHWUnueeQEfLCEmb+uv7qJedWDNCn1a/rykTJlwH0K0Zo1MBKMLL+j6dgch1qhO8+n9w0P root@iZ94jfds81iZ"
 ID_RSA2="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKP0TqWHgsiMJ+M8c9XSzZQzQQtpL7cHoNb5cn1CwxRMUxkhwcEmcxbGTy73BV5MRfX1oJxrz1uuB+Ke6JFJTAYF4+S3uO2B67Pw7weaSMMzXBfamxp5iWEU1QDle1iPeDP2tUeSSZ9TxVf3tdioFpU20P8KZTpvHUokvhqFSCPVhsh3uYuBuTDV72QRZBJfO2F79g1XlrcdBvjfteqdqnRQ0xnOTrx2EbzIOq0ztdujmCd1t4ilPaMFzAjq4O2CmXKUpKs+FytdhVcymxy6swF/pl2bxH+/JreF0ylyeZRBSD4jVbAnp6t9Wq1eWyL6p/a2QTL5TJbPysiotYqepf hxl@wy.local"
 
 # 用户
 echo "Create user($username), and set your password."
-set -x
 useradd $username
 passwd $username
 
+set -ex
 yum update -y
-yum install -y net-tools htop iftop tree lrzsz python3 git
+yum install -y net-tools htop iftop tree lrzsz python3 git yum-utils
 
 # 安装fish-shell
 cd /etc/yum.repos.d/
@@ -46,16 +46,15 @@ usermod -aG docker $username
 touch /var/log/dein.log
 chown -R l2x /var/log/dein.log
 
-# other
-git config --global user.email "l2x.huang@gmail.com"
-git config --global user.name "l2x"
 
 # -------------------------------------------------------
 # 切换到用户
 su - $username <<EOF
 
 git clone https://github.com/l2x-huang/vps.git
-ROOT=/home/$username/vps
+# other
+git config --global user.email "l2x.huang@gmail.com"
+git config --global user.name "l2x"
 
 # ssh
 mkdir -p /home/$username/.ssh
@@ -66,16 +65,17 @@ echo $ID_RSA2 >> /home/$username/.ssh/authorized_keys
 chmod 600 /home/$username/.ssh/authorized_keys
 
 # 切换shell
-chsh -s `which fish`
+#chsh -s `which fish`
 
 # neovim
 mkdir -p /home/$username/.local
 chmod +x $ROOT/neovim.sh
 $ROOT/neovim.sh
 pip3 install --user pynvim
-cd /home/$username/.config && git clone https://github.com/l2x-huang/vimrc.git nvim
+git clone https://github.com/l2x-huang/vimrc.git /home/$username/.config/nvim
 
 # fish 配置
+mkdir -p /home/$username/.config
 cp -r $ROOT/fish /home/$username/.config/
 
 EOF
