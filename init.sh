@@ -7,6 +7,7 @@ ID_RSA2="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKP0TqWHgsiMJ+M8c9XSzZQzQQtpL7cHo
 
 # 用户
 echo "Create user($username), and set your password."
+set -x
 useradd $username
 passwd $username
 
@@ -51,7 +52,10 @@ git config --global user.name "l2x"
 
 # -------------------------------------------------------
 # 切换到用户
-su - $username
+su - $username <<EOF
+
+git clone https://github.com/l2x-huang/vps.git
+ROOT=/home/$username/vps
 
 # ssh
 mkdir -p /home/$username/.ssh
@@ -74,3 +78,4 @@ cd /home/$username/.config && git clone https://github.com/l2x-huang/vimrc.git n
 # fish 配置
 cp -r $ROOT/fish /home/$username/.config/
 
+EOF
