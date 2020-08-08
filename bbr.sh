@@ -5,8 +5,8 @@ set -x
 echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 
-sysctl -p
+/sbin/sysctl -p
 
-sysctl net.ipv4.tcp_available_congestion_control
+/sbin/sysctl net.ipv4.tcp_available_congestion_control
 
 lsmod | grep bbr
