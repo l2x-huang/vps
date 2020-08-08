@@ -1,32 +1,33 @@
 #!/bin/bash
 
 username=l2x
-ROOT=`pwd`
 ID_RSA1="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDnpRSpGB8w2kYL/6MTRoc8PbOZru6keaasLbPeP2vc6Ssa9GciFWTmzWv9PwY55ojc6cnmuxSv9trJeWNJXiXKdgoW5OE6i7DKzhAg2W5SaR8wDyjKl625tOOy1y6IFy3YBPtSaflSp7unf03XOYWXfgYLWInXBX5Y2yaS3S5C+DECDY+L7UQBxHoKhN/GRf+JhbDLYOmWdhRHq2IosSimUDg6Y0AYPf2GKFPVjY8RdrmM8rKMU7YJKyYeCrYMnSVNTkJXIbgCAZF4EFEHWUnueeQEfLCEmb+uv7qJedWDNCn1a/rykTJlwH0K0Zo1MBKMLL+j6dgch1qhO8+n9w0P root@iZ94jfds81iZ"
 ID_RSA2="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKP0TqWHgsiMJ+M8c9XSzZQzQQtpL7cHoNb5cn1CwxRMUxkhwcEmcxbGTy73BV5MRfX1oJxrz1uuB+Ke6JFJTAYF4+S3uO2B67Pw7weaSMMzXBfamxp5iWEU1QDle1iPeDP2tUeSSZ9TxVf3tdioFpU20P8KZTpvHUokvhqFSCPVhsh3uYuBuTDV72QRZBJfO2F79g1XlrcdBvjfteqdqnRQ0xnOTrx2EbzIOq0ztdujmCd1t4ilPaMFzAjq4O2CmXKUpKs+FytdhVcymxy6swF/pl2bxH+/JreF0ylyeZRBSD4jVbAnp6t9Wq1eWyL6p/a2QTL5TJbPysiotYqepf hxl@wy.local"
 
 # 用户
 echo "Create user($username), and set your password."
-set -x
-useradd $username
+useradd -d /home/$username -m $username
 passwd $username
 
-yum update -y
-yum install -y net-tools htop iftop tree lrzsz python3 git
+apt update -y & apt upgrade -y
+apt install -y net-tools htop iftop tree git ripgrep sudo curl gpg python3-pip
 
 # 安装fish-shell
-cd /etc/yum.repos.d/
-wget https://download.opensuse.org/repositories/shells:fish/RHEL_7/shells:fish.repo
-yum install -y fish
-
-# 安装ripgrep
-yum-config-manager --add-repo=https://copr.fedorainfracloud.org/coprs/carlwgeorge/ripgrep/repo/epel-7/carlwgeorge-ripgrep-epel-7.repo
-yum install ripgrep -y
+echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_10/ /' | sudo tee /etc/apt/sources.list.d/shells:fish:release:3.list
+curl -fsSL https://download.opensuse.org/repositories/shells:fish:release:3/Debian_10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/shells:fish:release:3.gpg > /dev/null
+sudo apt update -y
+sudo apt install -y fish
 
 # 安装docker
-curl -fsSL https://get.docker.com | sh
+wget -c https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/docker-ce_19.03.9~3-0~debian-buster_amd64.deb
+wget -c https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/docker-ce-cli_19.03.9~3-0~debian-buster_amd64.deb
+wget -c https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/containerd.io_1.2.6-3_amd64.deb
+dpkg -i containerd.io_1.2.6-3_amd64.deb
+dpkg -i docker-ce-cli_19.03.9~3-0~debian-buster_amd64.deb
+dpkg -i docker-ce_19.03.9~3-0~debian-buster_amd64.deb
 systemctl enable docker
 systemctl start docker
+rm -f *.deb
 
 # 安装lazydocker
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
@@ -39,23 +40,22 @@ chmod +x /usr/local/bin/docker-compose
 echo "seu" > /etc/hostname
 
 # 添加到用户组
-usermod -aG wheel $username
 usermod -aG docker $username
 
 # dein log
 touch /var/log/dein.log
 chown -R l2x /var/log/dein.log
 
-# other
-git config --global user.email "l2x.huang@gmail.com"
-git config --global user.name "l2x"
+# sudo
+echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # -------------------------------------------------------
 # 切换到用户
 su - $username <<EOF
 
+git config --global user.email "l2x.huang@gmail.com"
+git config --global user.name "l2x"
 git clone https://github.com/l2x-huang/vps.git
-ROOT=/home/$username/vps
 
 # ssh
 mkdir -p /home/$username/.ssh
@@ -66,16 +66,18 @@ echo $ID_RSA2 >> /home/$username/.ssh/authorized_keys
 chmod 600 /home/$username/.ssh/authorized_keys
 
 # 切换shell
-chsh -s `which fish`
+#chsh -s `which fish`
 
 # neovim
 mkdir -p /home/$username/.local
-chmod +x $ROOT/neovim.sh
-$ROOT/neovim.sh
+cd /home/$username/vps
+chmod +x neovim.sh
+./neovim.sh
 pip3 install --user pynvim
-cd /home/$username/.config && git clone https://github.com/l2x-huang/vimrc.git nvim
+mkdir -p /home/$username/.config
+git clone https://github.com/l2x-huang/vimrc.git /home/$username/.config/nvim
 
 # fish 配置
-cp -r $ROOT/fish /home/$username/.config/
+cp -r fish /home/$username/.config/
 
 EOF
