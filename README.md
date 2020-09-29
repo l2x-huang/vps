@@ -4,10 +4,8 @@
 
 #### 使用
 ``` shell
-    wget -c https://raw.githubusercontent.com/l2x-huang/vps/debain/init.sh; \
-    chmod +x init.sh; \
-    ./init.sh; \
-    rm -f init.sh
+    wget -qO- https://raw.githubusercontent.com/l2x-huang/vps/debain/init.sh | \
+        sudo bash
 ```
 
 #### 开启bbr

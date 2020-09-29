@@ -10,24 +10,13 @@ useradd -d /home/$username -m $username
 passwd $username
 
 apt update -y & apt upgrade -y
-apt install -y net-tools htop iftop tree git ripgrep sudo curl gpg python3-pip
-
-# 安装fish-shell
-echo 'deb http://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_10/ /' | sudo tee /etc/apt/sources.list.d/shells:fish:release:3.list
-curl -fsSL https://download.opensuse.org/repositories/shells:fish:release:3/Debian_10/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/shells:fish:release:3.gpg > /dev/null
-sudo apt update -y
-sudo apt install -y fish
+apt install -y net-tools htop iftop tree git ripgrep sudo curl python3-pip \
+        fish fd-find
 
 # 安装docker
-wget -c https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/docker-ce_19.03.9~3-0~debian-buster_amd64.deb
-wget -c https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/docker-ce-cli_19.03.9~3-0~debian-buster_amd64.deb
-wget -c https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/containerd.io_1.2.6-3_amd64.deb
-dpkg -i containerd.io_1.2.6-3_amd64.deb
-dpkg -i docker-ce-cli_19.03.9~3-0~debian-buster_amd64.deb
-dpkg -i docker-ce_19.03.9~3-0~debian-buster_amd64.deb
+curl -fsSL https://get.docker.com | bash
 systemctl enable docker
 systemctl start docker
-rm -f *.deb
 
 # 安装lazydocker
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
