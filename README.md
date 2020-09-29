@@ -3,11 +3,11 @@
 
 ``` sh
 ## 添加2G的swap
-$ wget -qO- https://github.com/l2x-huang/vps/blob/master/swap.sh | \
-    sudo bash - -a -s 2G
+$ wget -qO- https://raw.githubusercontent.com/l2x-huang/vps/master/swap.sh | \
+        sudo bash -s -- -a -s 2G
 ## 删除swap
-$ wget -qO- https://github.com/l2x-huang/vps/blob/master/swap.sh | \
-    sudo bash - -d
+$ wget -qO- https://raw.githubusercontent.com/l2x-huang/vps/master/swap.sh | \
+        sudo bash -s -- -d
 ```
 
 `

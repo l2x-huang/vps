@@ -2,7 +2,7 @@
 #
 # [参考](https://www.moerats.com/archives/722/)
 #
-function usage() {
+usage() {
     echo "USAGE:"
     echo -e "\tswap.sh [options]"
     echo -e "\nOPTIONS:"
