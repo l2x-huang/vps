@@ -1,17 +1,21 @@
 #!/bin/bash
 
-username=l2x
-ID_RSA1="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDnpRSpGB8w2kYL/6MTRoc8PbOZru6keaasLbPeP2vc6Ssa9GciFWTmzWv9PwY55ojc6cnmuxSv9trJeWNJXiXKdgoW5OE6i7DKzhAg2W5SaR8wDyjKl625tOOy1y6IFy3YBPtSaflSp7unf03XOYWXfgYLWInXBX5Y2yaS3S5C+DECDY+L7UQBxHoKhN/GRf+JhbDLYOmWdhRHq2IosSimUDg6Y0AYPf2GKFPVjY8RdrmM8rKMU7YJKyYeCrYMnSVNTkJXIbgCAZF4EFEHWUnueeQEfLCEmb+uv7qJedWDNCn1a/rykTJlwH0K0Zo1MBKMLL+j6dgch1qhO8+n9w0P root@iZ94jfds81iZ"
-ID_RSA2="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKP0TqWHgsiMJ+M8c9XSzZQzQQtpL7cHoNb5cn1CwxRMUxkhwcEmcxbGTy73BV5MRfX1oJxrz1uuB+Ke6JFJTAYF4+S3uO2B67Pw7weaSMMzXBfamxp5iWEU1QDle1iPeDP2tUeSSZ9TxVf3tdioFpU20P8KZTpvHUokvhqFSCPVhsh3uYuBuTDV72QRZBJfO2F79g1XlrcdBvjfteqdqnRQ0xnOTrx2EbzIOq0ztdujmCd1t4ilPaMFzAjq4O2CmXKUpKs+FytdhVcymxy6swF/pl2bxH+/JreF0ylyeZRBSD4jVbAnp6t9Wq1eWyL6p/a2QTL5TJbPysiotYqepf hxl@wy.local"
+username=cc
+ID_RSA="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKP0TqWHgsiMJ+M8c9XSzZQzQQtpL7cHoNb5cn1CwxRMUxkhwcEmcxbGTy73BV5MRfX1oJxrz1uuB+Ke6JFJTAYF4+S3uO2B67Pw7weaSMMzXBfamxp5iWEU1QDle1iPeDP2tUeSSZ9TxVf3tdioFpU20P8KZTpvHUokvhqFSCPVhsh3uYuBuTDV72QRZBJfO2F79g1XlrcdBvjfteqdqnRQ0xnOTrx2EbzIOq0ztdujmCd1t4ilPaMFzAjq4O2CmXKUpKs+FytdhVcymxy6swF/pl2bxH+/JreF0ylyeZRBSD4jVbAnp6t9Wq1eWyL6p/a2QTL5TJbPysiotYqepf hxl@wy.local"
+TZ=Asia/Shanghai
+
+# 时区
+ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 安装软件
+apt update -y & apt upgrade -y
+apt install -y net-tools htop iftop tree git ripgrep sudo curl python3-pip \
+        fish fd-find lsof curl zip unzip locales lrzsz wget gnupg
 
 # 用户
 echo "Create user($username), and set your password."
-useradd -d /home/$username -m $username
-passwd $username
-
-apt update -y & apt upgrade -y
-apt install -y net-tools htop iftop tree git ripgrep sudo curl python3-pip \
-        fish fd-find
+useradd -d /home/$username -s /usr/bin/fish -m $username
+printf '%s:%s' $username $username | chpasswd
 
 # 安装docker
 curl -fsSL https://get.docker.com | bash
@@ -27,46 +31,45 @@ chmod +x /usr/local/bin/docker-compose
 
 # 更改主机名
 echo "seu" > /etc/hostname
+echo "127.0.0.1       seu" >> /etc/hosts
 
 # 添加到用户组
 usermod -aG docker $username
 
-# dein log
-touch /var/log/dein.log
-chown -R l2x /var/log/dein.log
-
 # sudo
 echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+# ssh
+sed -i 's/#*PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
+sed -i 's/#*PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
+sed -i 's/#*PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config
+systemctl restart sshd
+
+# utf-8
+locale-gen "en_US.UTF-8"
+update-locale LC_ALL="en_US.UTF-8"
+
 
 # -------------------------------------------------------
 # 切换到用户
 su - $username <<EOF
 
-git config --global user.email "l2x.huang@gmail.com"
-git config --global user.name "l2x"
-git clone https://github.com/l2x-huang/vps.git
+mkdir -p /home/$username/.local
+
+git config --global user.email "cc@l2x.top"
+git config --global user.name "cc"
 
 # ssh
 mkdir -p /home/$username/.ssh
 chmod 700 /home/$username/.ssh
 
-echo $ID_RSA1 >> /home/$username/.ssh/authorized_keys
-echo $ID_RSA2 >> /home/$username/.ssh/authorized_keys
+echo $ID_RSA >> /home/$username/.ssh/authorized_keys
 chmod 600 /home/$username/.ssh/authorized_keys
 
-# 切换shell
-#chsh -s `which fish`
-
-# neovim
-mkdir -p /home/$username/.local
-cd /home/$username/vps
-chmod +x neovim.sh
-./neovim.sh
-pip3 install --user pynvim
-mkdir -p /home/$username/.config
-git clone https://github.com/l2x-huang/vimrc.git /home/$username/.config/nvim
-
-# fish 配置
-cp -r fish /home/$username/.config/
+# fisher
+curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+fish -c '
+        fisher install edc/bass
+'
 
 EOF

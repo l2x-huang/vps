@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pip3 install --user pynvim
+
 wget -c https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.tar.gz \
    -O - | tar -xzf -
 cp -r nvim-linux64/* $HOME/.local
