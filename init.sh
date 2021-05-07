@@ -42,7 +42,8 @@ echo "$username ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 # ssh
 sed -i 's/#*PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
 sed -i 's/#*PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
-sed -i 's/#*PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config
+sed -i 's/#*Port 22/Port 2222/g' /etc/ssh/sshd_config
+#sed -i 's/#*PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config
 systemctl restart sshd
 
 # utf-8

@@ -2,8 +2,8 @@
 
 # llvm source
 echo '
-deb http://apt.llvm.org/focal/ llvm-toolchain-focal main\n
-deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal main\n' >> /etc/apt/sources.list
+deb http://apt.llvm.org/focal/ llvm-toolchain-focal main
+deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal main' >> /etc/apt/sources.list
 wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 
 apt update
