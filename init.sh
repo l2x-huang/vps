@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 username=cc
 ID_RSA="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKP0TqWHgsiMJ+M8c9XSzZQzQQtpL7cHoNb5cn1CwxRMUxkhwcEmcxbGTy73BV5MRfX1oJxrz1uuB+Ke6JFJTAYF4+S3uO2B67Pw7weaSMMzXBfamxp5iWEU1QDle1iPeDP2tUeSSZ9TxVf3tdioFpU20P8KZTpvHUokvhqFSCPVhsh3uYuBuTDV72QRZBJfO2F79g1XlrcdBvjfteqdqnRQ0xnOTrx2EbzIOq0ztdujmCd1t4ilPaMFzAjq4O2CmXKUpKs+FytdhVcymxy6swF/pl2bxH+/JreF0ylyeZRBSD4jVbAnp6t9Wq1eWyL6p/a2QTL5TJbPysiotYqepf hxl@wy.local"
 TZ=Asia/Shanghai
@@ -8,9 +10,11 @@ TZ=Asia/Shanghai
 ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 安装软件
-apt update -y & apt upgrade -y
-apt install -y net-tools htop iftop tree git ripgrep sudo curl python3-pip \
-        fish fd-find lsof curl zip unzip locales lrzsz wget gnupg
+apt-add-repository ppa:fish-shell/release-3 -y
+apt update & apt upgrade -y
+apt install -y net-tools htop tree git sudo curl python3-pip \
+        fish ripgrep fd-find lsof curl zip unzip locales lrzsz wget gnupg
+
 
 # 用户
 echo "Create user($username), and set your password."
