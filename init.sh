@@ -51,7 +51,7 @@ systemctl restart sshd
 
 # utf-8
 locale-gen "en_US.UTF-8"
-update-locale LC_ALL="en_US.UTF-8"
+# update-locale LC_ALL="en_US.UTF-8"
 
 
 # -------------------------------------------------------
