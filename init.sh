@@ -10,7 +10,6 @@ TZ=Asia/Shanghai
 ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # 安装软件
-apt-add-repository ppa:fish-shell/release-3 -y
 apt update & apt upgrade -y
 apt install -y net-tools htop tree git sudo curl python3-pip \
         fish ripgrep fd-find lsof curl zip unzip locales lrzsz wget gnupg
